@@ -15,7 +15,7 @@ void setup() {
   Keyboard.set_key1(KEY_R);
   Keyboard.send_now();
     
-  delay(500);
+  delay(1500);
   Keyboard.set_modifier(0);
   Keyboard.set_key1(0);
   Keyboard.send_now();
@@ -26,7 +26,7 @@ void setup() {
   Keyboard.send_now();
 
 
-  delay(300);
+  delay(1500);
   Keyboard.print(" Hello World !!");
   Keyboard.set_key1(KEY_ENTER);   
   Keyboard.send_now();
