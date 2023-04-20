@@ -1,4 +1,3 @@
-```
 #include <paensy.h>
 #include <Keyboard.h>
 
@@ -39,4 +38,3 @@ void loop() {
   // put your main code here, to run repeatedly:
 
 }
-```
