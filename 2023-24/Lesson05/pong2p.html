@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            background-color: #000;
+        }
+
+        .score {
+            color: #fff;
+            font-size: 24px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+    <title>Pong Game</title>
+</head>
+<body>
+    <canvas id="pongCanvas" width="800" height="600"></canvas>
+    <div class="score" id="score">0 - 0</div>
+
+    <script>
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const paddleWidth = 20; // Wider paddles
+        const paddleHeight = 80; // Taller paddles
+        const ballSize = 10;
+
+        const leftPaddle = {
+            x: 10,
+            y: canvas.height / 2 - paddleHeight / 2,
+            dy: 6, // Paddle speed
+        };
+
+        const rightPaddle = {
+            x: canvas.width - paddleWidth - 10,
+            y: canvas.height / 2 - paddleHeight / 2,
+            dy: 6, // Paddle speed
+        };
+
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            dx: 5, // Ball speed in the x direction
+            dy: 5, // Ball speed in the y direction
+        };
+
+        let leftPaddleUpPressed = false;
+        let leftPaddleDownPressed = false;
+        let rightPaddleUpPressed = false;
+        let rightPaddleDownPressed = false;
+
+        let leftScore = 0;
+        let rightScore = 0;
+
+        let gameActive = true;
+
+        function drawPaddle(x, y) {
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(x, y, paddleWidth, paddleHeight);
+        }
+
+        function drawBall() {
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ballSize, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update paddles
+            if (leftPaddleUpPressed && leftPaddle.y > 0) {
+                leftPaddle.y -= leftPaddle.dy;
+            }
+            if (leftPaddleDownPressed && leftPaddle.y < canvas.height - paddleHeight) {
+                leftPaddle.y += leftPaddle.dy;
+            }
+
+            if (rightPaddleUpPressed && rightPaddle.y > 0) {
+                rightPaddle.y -= rightPaddle.dy;
+            }
+            if (rightPaddleDownPressed && rightPaddle.y < canvas.height - paddleHeight) {
+                rightPaddle.y += rightPaddle.dy;
+            }
+
+            // Update ball position
+            if (gameActive) {
+                ball.x += ball.dx;
+                ball.y += ball.dy;
+            }
+
+            // Ball and wall collision
+            if (ball.y + ballSize > canvas.height || ball.y - ballSize < 0) {
+                ball.dy = -ball.dy;
+            }
+
+            // Ball and paddles collision
+            if (
+                (ball.x - ballSize < leftPaddle.x + paddleWidth && ball.y > leftPaddle.y && ball.y < leftPaddle.y + paddleHeight) ||
+                (ball.x + ballSize > rightPaddle.x && ball.y > rightPaddle.y && ball.y < rightPaddle.y + paddleHeight)
+            ) {
+                ball.dx = -ball.dx;
+            }
+
+            // Scoring
+            if (ball.x - ballSize < 0) {
+                // Ball out on the left side
+                rightScore++;
+                resetGame();
+            }
+
+            if (ball.x + ballSize > canvas.width) {
+                // Ball out on the right side
+                leftScore++;
+                resetGame();
+            }
+
+            // Draw elements
+            drawPaddle(leftPaddle.x, leftPaddle.y);
+            drawPaddle(rightPaddle.x, rightPaddle.y);
+            drawBall();
+
+            // Draw the score
+            document.getElementById('score').textContent = `${leftScore} - ${rightScore}`;
+
+            requestAnimationFrame(draw);
+        }
+
+        function resetGame() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = -ball.dx;
+            gameActive = true;
+        }
+
+        document.addEventListener('keydown', function (event) {
+            switch (event.code) {
+                case 'KeyW':
+                    leftPaddleUpPressed = true;
+                    break;
+                case 'KeyS':
+                    leftPaddleDownPressed = true;
+                    break;
+                case 'ArrowUp':
+                    rightPaddleUpPressed = true;
+                    break;
+                case 'ArrowDown':
+                    rightPaddleDownPressed = true;
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            switch (event.code) {
+                case 'KeyW':
+                    leftPaddleUpPressed = false;
+                    break;
+                case 'KeyS':
+                    leftPaddleDownPressed = false;
+                    break;
+                case 'ArrowUp':
+                    rightPaddleUpPressed = false;
+                    break;
+                case 'ArrowDown':
+                    rightPaddleDownPressed = false;
+                    break;
+            }
+        });
+
+        draw();
+    </script>
+</body>
+</html>
