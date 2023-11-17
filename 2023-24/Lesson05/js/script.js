@@ -3,6 +3,6 @@ function clickme1() {
 }
 
 function clickme2() {
-  var name=prompt('what's your name?');
+  var name=prompt("what's your name?");
   $('#message').text(name)
 }
